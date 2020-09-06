@@ -19,7 +19,7 @@ const PostSchema = new mongoose.Schema({
         type: Number
     },
     comments: {
-        type: [{ email: String }, { body: String }, { timestamp: Date }]
+        type: [{ email: String, body: String, timestamp: Date }]
     },
     timestamp: {
         type: Date,

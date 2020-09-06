@@ -67,20 +67,47 @@
   {{#each people}}
 
     <div class="card" style="margin-top:30px; margin-bottom:30px">
-      <h5 class="card-header">{{this.email}}</h5>
+      <h5 class="card-header">{{this.email}}
+        <small class="form-text text-muted">{{this.timestamp}}</small>
+      </h5>
       <div class="card-body">
         
       <p class="card-text">{{this.body}}</p>
       {{!-- <p id="likes{{this._id}}">{{this.totalLikes}}</p> --}}
       <button class="btn btn-primary" id="like{{this._id}}" style="display: {{this.displayLike}};"><span id="likes{{this._id}}">{{this.totalLikes}}</span>  Like</button>
       <button class="btn btn-primary" id="unlike{{this._id}}" style="display: {{this.displayUnlike}};"><span id="likes{{this._id}}">{{this.totalLikes}}</span>  Unlike</button>
-      <button class="btn btn-secondary">Comment</button>
-      <small class="form-text text-muted">{{this.timestamp}}</small>
+      <br><br>
+      
+      <input type="text" id="comment{{this._id}}" placeholder="Add a comment!">
+      <button class="btn btn-secondary" id="postcomment{{this._id}}">Comment</button>
+      <br>
+
+      <ul>
+
+        {{#each this.comments}}
+
+        <li>{{this.body}}</li>
+
+        {{/each}}
+
+      </ul>         
+        
 
       </div>
     </div>
 
     <script>
+      document.getElementById("postcomment{{this._id}}").addEventListener("click", function() {
+        $.post("addcomment",
+        { 
+          postId: '{{this._id}}',
+          body: $("#comment{{this._id}}").val()
+        },
+        function(data, status){
+         
+          console.log(data);       
+        });
+      }, false);
       document.getElementById("like{{this._id}}").addEventListener("click", function() {
         $.post("likepost",
         { 

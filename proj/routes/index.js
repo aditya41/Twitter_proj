@@ -144,6 +144,7 @@ route.post('/newpost', (req, res, next) => {
         return next(err)
     }
 });
+
 // LIKE ROUTES
 route.post('/likepost', (req, res, next) => {
     if (!req.session.userID) {
@@ -213,6 +214,38 @@ route.post('/unlikepost', (req, res, next) => {
     }
 })
 
+///////////////////////////////////////////// COMMENT ROUTES
+
+route.post('/addcomment', (req, res, next) => {
+
+    if (!req.session.userID) {
+        return res.redirect('/login')
+    }
+
+    if (req.body.postId && req.body.body) {
+
+        User.findById(req.session.userID)
+            .exec((err, user) => {
+                if (err) return next(err)
+                Post.updateOne({ _id: req.body.postId }, {
+                            $push: { comments: { email: user.email, body: req.body.body, timestamp: new Date() } }
+                        },
+                        function(err, count) {
+                            if (err) next(err)
+                            res.json({ s: 1 })
+                        }
+                    )
+                    // req.session.userID = user._id
+            })
+        return res
+    } else {
+        let err = new Error('You need to enter all the information')
+        err.status = 400
+        return next(err)
+    }
+
+})
+
 /////////////////////////////////////////////////get /explor
 
 route.get('/explore', (req, res, next) => {
@@ -223,6 +256,7 @@ route.get('/explore', (req, res, next) => {
     Post.find().then((posts) => {
 
         var arrayOfTodos = [];
+
         posts.forEach(function(element) {
 
             User.findById(req.session.userID)
@@ -235,17 +269,17 @@ route.get('/explore', (req, res, next) => {
                         if (element.usersWhoLiked[i].email == user.email) {
                             flag = 1
                             var editedElement = {
-                                _id: element._id,
-                                email: element.email,
-                                body: element.body,
-                                totalLikes: element.totalLikes,
-                                timestamp: element.timestamp,
-                                comments: element.comments,
-                                displayLike: "none",
-                                displayUnlike: "inline",
-                                usersWhoLiked: element.usersWhoLiked
-                            }
-                            console.log(editedElement)
+                                    _id: element._id,
+                                    email: element.email,
+                                    body: element.body,
+                                    comments: element.comments,
+                                    totalLikes: element.totalLikes,
+                                    timestamp: element.timestamp,
+                                    displayLike: "none",
+                                    displayUnlike: "inline",
+                                    usersWhoLiked: element.usersWhoLiked
+                                }
+                                // console.log(editedElement)
                             arrayOfTodos.push(editedElement);
                             break
                         }
@@ -253,17 +287,17 @@ route.get('/explore', (req, res, next) => {
 
                     if (flag == 0) {
                         var editedElement = {
-                            _id: element._id,
-                            email: element.email,
-                            body: element.body,
-                            totalLikes: element.totalLikes,
-                            timestamp: element.timestamp,
-                            comments: element.comments,
-                            displayLike: "inline",
-                            displayUnlike: "none",
-                            usersWhoLiked: element.usersWhoLiked
-                        }
-                        console.log(editedElement)
+                                _id: element._id,
+                                email: element.email,
+                                body: element.body,
+                                totalLikes: element.totalLikes,
+                                timestamp: element.timestamp,
+                                comments: element.comments,
+                                displayLike: "inline",
+                                displayUnlike: "none",
+                                usersWhoLiked: element.usersWhoLiked
+                            }
+                            // console.log(editedElement)
                         arrayOfTodos.push(editedElement);
                     }
                 })
