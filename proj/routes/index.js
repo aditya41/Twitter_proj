@@ -26,11 +26,45 @@ route.get('/profile', (req, res, next) => {
             var arrayOfTodos = [];
             Post.find().then((posts) => {
 
-
                 posts.forEach(function(element) {
-                    // console.log(element.email)
-                    if (user.email == element.email)
-                        arrayOfTodos.push(element);
+                    if (user.email == element.email) {
+
+                        var flag = 0
+                        for (var i = 0; i < element.usersWhoLiked.length; i++) {
+                            if (element.usersWhoLiked[i].email == user.email) {
+                                flag = 1
+                                var editedElement = {
+                                        _id: element._id,
+                                        email: element.email,
+                                        body: element.body,
+                                        comments: element.comments,
+                                        totalLikes: element.totalLikes,
+                                        timestamp: element.timestamp,
+                                        displayLike: "none",
+                                        displayUnlike: "inline",
+                                        usersWhoLiked: element.usersWhoLiked
+                                    }
+                                    // console.log(editedElement)
+                                arrayOfTodos.push(editedElement);
+                                break
+                            }
+                        }
+                        if (flag == 0) {
+                            var editedElement = {
+                                    _id: element._id,
+                                    email: element.email,
+                                    body: element.body,
+                                    totalLikes: element.totalLikes,
+                                    timestamp: element.timestamp,
+                                    comments: element.comments,
+                                    displayLike: "inline",
+                                    displayUnlike: "none",
+                                    usersWhoLiked: element.usersWhoLiked
+                                }
+                                // console.log(editedElement)
+                            arrayOfTodos.push(editedElement);
+                        }
+                    }
                 })
             })
 
@@ -181,32 +215,54 @@ route.post('/likepost', (req, res, next) => {
 })
 
 route.post('/unlikepost', (req, res, next) => {
+        if (!req.session.userID) {
+            return res.redirect('/login')
+        }
+        if (req.body.postId) {
+            Post.findById(req.body.postId)
+                .exec((err, oldPost) => {
+                    if (err) return next(err);
+                    var currLike = oldPost.totalLikes - 1
+
+                    User.findById(req.session.userID)
+                        .exec((err, user) => {
+                            if (err) return next(err)
+                            Post.updateOne({ _id: req.body.postId }, {
+                                    $set: { totalLikes: currLike },
+                                    $pull: { usersWhoLiked: { email: user.email } }
+                                },
+                                function(err, count) {
+                                    if (err) next(err)
+                                }
+                            )
+                            req.session.userID = user._id
+                        })
+
+                    res.json({ newLikes: currLike, displayLike: "inline", displayUnlike: "none" })
+                    return res
+                })
+        } else {
+            let err = new Error('You need to enter all the information')
+            err.status = 400
+            return next(err)
+        }
+    })
+    ////////////////////////////////////////////delete post
+
+route.post('/deletepost', (req, res, next) => {
+
     if (!req.session.userID) {
         return res.redirect('/login')
     }
+
     if (req.body.postId) {
-        Post.findById(req.body.postId)
-            .exec((err, oldPost) => {
-                if (err) return next(err);
-                var currLike = oldPost.totalLikes - 1
 
-                User.findById(req.session.userID)
-                    .exec((err, user) => {
-                        if (err) return next(err)
-                        Post.updateOne({ _id: req.body.postId }, {
-                                $set: { totalLikes: currLike },
-                                $pull: { usersWhoLiked: { email: user.email } }
-                            },
-                            function(err, count) {
-                                if (err) next(err)
-                            }
-                        )
-                        req.session.userID = user._id
-                    })
+        Post.deleteOne({ _id: req.body.postId },
+            function(err, count) {
+                if (err) next(err)
+            }
+        )
 
-                res.json({ newLikes: currLike, displayLike: "inline", displayUnlike: "none" })
-                return res
-            })
     } else {
         let err = new Error('You need to enter all the information')
         err.status = 400
@@ -232,7 +288,7 @@ route.post('/addcomment', (req, res, next) => {
                         },
                         function(err, count) {
                             if (err) next(err)
-                            res.json({ s: 1 })
+                            res.json({ email: user.email, body: req.body.body, timestamp: new Date() })
                         }
                     )
                     // req.session.userID = user._id
