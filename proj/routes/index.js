@@ -104,10 +104,10 @@ route.get('/register', (req, res, next) => {
     })
     // Post /register
 route.post('/register', (req, res, next) => {
-    if (req.body.name && req.body.password && req.body.movie && req.body.email) {
+    if (req.body.name && req.body.password && req.body.email) {
         var userData = {
             name: req.body.name,
-            movie: req.body.movie,
+            number: req.body.number,
             password: req.body.password,
             email: req.body.email
         }
@@ -169,7 +169,7 @@ route.post('/newpost', (req, res, next) => {
                         // req.session.userID = user._id
                         // console.log(postData)
 
-                    return res.redirect('/explore')
+                    return res.redirect('/profile')
                 })
             })
     } else {

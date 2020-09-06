@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    movie: {
+    number: {
         type: String,
         trim: true
     }
@@ -34,7 +34,7 @@ UserSchema.statics.authenticate = (email, password, cb) => {
             }
             bcrypt.compare(password, user.password, function(err, result) {
                 if (err) return cb(err)
-                if (result == true)
+                if (result === true)
                     return cb(null, user)
             })
         })

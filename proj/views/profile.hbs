@@ -8,7 +8,8 @@
     {{!-- <link rel="stylesheet" href="/views/style.css"> --}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </head>
-<body>
+<body style="background: rgb(219,246,251);
+background: linear-gradient(90deg, rgba(219,246,251,1) 0%, rgba(114,121,121,1) 41%, rgba(211,214,214,0.9920343137254902) 60%, rgba(244,246,246,1) 100%);">
  <nav class="navbar navbar-expand-lg navbar-light bg-dark fixed-top " id="navb">
 
         <a class="navbar-brand text-white" href="./explore">Home</a>
@@ -56,7 +57,7 @@
    
    <div class="container" >
        {{!-- <br><br> --}}
-    <div style=" margin-top: 70px ">Hello {{name}}! hope you having a nice day. well, check your wall</div>
+    <h1 style=" margin-top: 70px; font-style: italic; text-align:center">Hello {{name}}! Check you wall</h1>
     <br>
   
     {{#each people}}
@@ -74,7 +75,7 @@
       {{!-- <p id="likes{{this._id}}">{{this.totalLikes}}</p> --}}
       <button class="btn btn-primary" id="like{{this._id}}" style="display: {{this.displayLike}};"><span id="likes{{this._id}}">{{this.totalLikes}}</span>  &#128077;</button>
       <button class="btn btn-primary" id="unlike{{this._id}}" style="display: {{this.displayUnlike}};"><span id="likes{{this._id}}">{{this.totalLikes}}</span>  &#128078;</button>
-      <br><br>
+      <br>
       
       {{!-- <input type="text" id="comment{{this._id}}" placeholder="Add a comment!">
       <button class="btn btn-secondary" id="postcomment{{this._id}}">Comment</button>
