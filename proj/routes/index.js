@@ -81,7 +81,7 @@ route.get('/login', (req, res, next) => {
 route.post('/login', (req, res, next) => {
         if (req.body.email && req.body.password) {
             User.authenticate(req.body.email, req.body.password, (err, user) => {
-                if (err || !user) {
+                if (!user || err) {
                     let err = new Error('Wrong Email or Password')
                     err.status = 401
                         // console.log(err)

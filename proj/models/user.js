@@ -26,18 +26,22 @@ const UserSchema = new mongoose.Schema({
 UserSchema.statics.authenticate = (email, password, cb) => {
     User.findOne({ email })
         .exec((err, user) => {
-            if (err) return cb(err)
+            if (err) return (err) //changed
             else if (!user) {
                 let err = new Error('User Not Found!')
                 err.status = 401
                 return cb(err)
             }
             bcrypt.compare(password, user.password, function(err, result) {
-                if (err) return cb(err)
-                if (result === true)
-                    return cb(null, user)
-            })
+                    // if (err) return cb(new Error('User Not Found!'))
+                    if (result == true)
+                        return cb(null, user)
+                    return cb(new Error('User Not Found!'))
+                })
+                // return cb(err)
+                // return next(err)
         })
+
 }
 
 UserSchema.pre('save', function(next) {
