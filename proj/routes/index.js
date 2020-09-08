@@ -308,8 +308,8 @@ route.get('/explore', (req, res, next) => {
     if (!req.session.userID) {
         return res.redirect('/login')
     }
-
-    Post.find().then((posts) => {
+    console.log(Post)
+    Post.find({}, function(err, posts) {
 
         var arrayOfTodos = [];
 
